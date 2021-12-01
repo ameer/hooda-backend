@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use App\Http\Controllers\OTPController;
+use Exception;
+use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 
 class RegisteredUserController extends Controller
@@ -22,6 +25,85 @@ class RegisteredUserController extends Controller
     public function create()
     {
         return Inertia::render('Auth/Register');
+    }
+
+    /**
+     * Handle a registration request for the application.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Exception
+     * @return JsonResponse
+     */
+    public function verifyPhone(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string|max:11|unique:users'
+        ]);
+        $otp = new OTPController();
+        [$fullHash, $phoneNumber, $otp, $maskedPhoneNumber] = $otp->ProcessOTPRequest($request->phone);
+        if ($this->sendOTP($phoneNumber, $otp)) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'loginHash' => $fullHash,
+                    'phoneNumber' => $maskedPhoneNumber
+                ]);
+            } else {
+                return Inertia::render('Auth/VerifyPhone')->with([
+                    'loginHash' => $fullHash,
+                    'phoneNumber' => $maskedPhoneNumber,
+                ]);
+            }
+        } else {
+            throw new Exception("Error sending SMS", 1);
+        }
+    }
+
+    public function verifyOTP(Request $request)
+    {
+        $otp_length = env('OTP_LENGTH');
+        $request->validate([
+            'otp' => 'required|string|max:' . $otp_length,
+            'phone' => 'required|string|max:11|unique:users',
+            'loginHash' => 'required|string'
+        ]);
+        $phoneNumber = $request->phone;
+        $fullHash = $request->loginHash;
+        $input_otp = $request->otp;
+        $otp_class = new OTPController();
+        [$result, $msg] = $otp_class->verifyOTP($phoneNumber, $fullHash, $input_otp);
+        if ($result) {
+            $user = User::create([
+                'phone' => $phoneNumber
+            ]);
+            event(new Registered($user));
+            return response()->json([
+                'success' => true,
+                'message' => $msg
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => $msg
+            ]);
+        }
+    }
+    /** 
+     * Send OTP to the user's phone number
+     * 
+     * @param string $phoneNumber
+     * @param string $otp
+     * 
+     * @return bool
+     */
+    protected function sendOTP($phoneNumber, $otp)
+    {
+        // $sms = new SMSController();
+        // $result = $sms->sendSMS($phoneNumber, $otp);
+        // return $result;
+        error_log($otp);
+        return true;
     }
 
     /**

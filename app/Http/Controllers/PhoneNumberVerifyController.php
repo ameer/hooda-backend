@@ -49,9 +49,10 @@ class PhoneNumberVerifyController extends Controller
 
     protected function sendOTP($phoneNumber, $otp)
     {
-        $sms = new SMSController();
-        $result = $sms->sendSMS($phoneNumber, $otp);
-        error_log($result);
-        return $result;
+        // $sms = new SMSController();
+        // $result = $sms->sendSMS($phoneNumber, $otp);
+        // return $result;
+        error_log($otp);
+        return true;
     }
 }

@@ -7,15 +7,7 @@ use Illuminate\Http\Request;
 
 class OTPController extends Controller
 {
-    public function VerifyOTPRequest(Request $request)
-    {
-        $phoneNumber = $request->user()->phone;
-        $fullHash = $request->input('loginHash');
-        $input_otp = $request->input('otp');
-        $otp_verification = $this->verifyOTP($phoneNumber, $fullHash, $input_otp);
-        return $otp_verification;
-    }
-    protected function verifyOTP($phoneNumber, $fullHash, $otp)
+    public function verifyOTP($phoneNumber, $fullHash, $input_otp)
     {
         $result = false;
         $msg = "کد وارد شده صحیح نمی‌باشد";
@@ -25,23 +17,25 @@ class OTPController extends Controller
         $expires = $exploded_hash[1];
         $now = Carbon::now()->timestamp;
         // Calculate new hash with the same key and the same algorithm
-        $data  = "$phoneNumber.$otp.$expires";
+        $data  = "$phoneNumber.$input_otp.$expires";
         $newCalculatedHash = hash_hmac('sha256', $data, config('app.key'));
+
         // Match the hashes
         if (md5($newCalculatedHash) === md5($hashValue)) {
+            
             // Check if expiry time has passed
             if ($now > intval($expires)) {
                 $msg = "کد وارد شده منقضی شده است.";
             } else {
                 $result = true;
+                $msg = "کد وارد شده صحیح است.";
             }
         }
-        return ['result' => $result, 'msg' => $msg];
+        return [$result, $msg];
     }
 
-    public function ProcessOTPRequest($user)
+    public function ProcessOTPRequest($phoneNumber)
     {
-        $phoneNumber = $user->phone;
         [$fullHash, $otp] = $this->GenerateHash($phoneNumber);
         $masked_phone_number = substr_replace($phoneNumber, '*********', 0, 9);
         return [$fullHash, $phoneNumber, $otp, $masked_phone_number];

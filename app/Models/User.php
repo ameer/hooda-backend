@@ -18,9 +18,10 @@ class User extends Authenticatable
      * @var string[]
      */
     protected $fillable = [
-        'name',
-        'email',
+        'fullname',
         'phone',
+        'city',
+        'email',
         'password',
     ];
 
@@ -41,17 +42,5 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'phone_verified_at' => 'datetime',
     ];
-    public function userPhoneVerified()
-    {
-        return !is_null($this->phone_verified_at);
-    }
-
-    public function phoneVerifiedAt()
-    {
-        return $this->forceFill([
-            'phone_verified_at' => $this->freshTimestamp(),
-        ])->save();
-    }
 }
