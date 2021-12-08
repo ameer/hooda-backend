@@ -37,14 +37,14 @@ class OTPController extends Controller
     public function ProcessOTPRequest($phoneNumber)
     {
         [$fullHash, $otp] = $this->GenerateHash($phoneNumber);
-        $masked_phone_number = substr_replace($phoneNumber, '*********', 0, 9);
+        $masked_phone_number = substr_replace($phoneNumber, '***', 4, 3);
         return [$fullHash, $phoneNumber, $otp, $masked_phone_number];
     }
 
     protected function GenerateHash($phoneNumber)
     {
         $otp = $this->OTPGenerator($phoneNumber);
-        $ttl = env('OTP_EXPIRE_MINUTES') * 60; //? Minutes in miliseconds
+        $ttl = config('app.otp_expire_minutes') * 60; //? Minutes in miliseconds
         $expires  = Carbon::now()->timestamp + $ttl;
         $data = "$phoneNumber.$otp.$expires";
         $hash = hash_hmac('sha256', $data, config('app.key'));
@@ -56,6 +56,6 @@ class OTPController extends Controller
     {
         mt_srand(crc32(microtime()));
         $number = strval(mt_rand(100000000, 999999999));
-        return substr($number, 0, env('OTP_LENGTH'));
+        return substr($number, 0, config('app.otp_length'));
     }
 }

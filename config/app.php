@@ -123,6 +123,10 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'otp_length' => env('OTP_LENGTH', 4),
+
+    'otp_expire_minutes' => env('OTP_EXPIRE_MINUTES', 5),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

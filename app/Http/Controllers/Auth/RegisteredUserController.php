@@ -62,7 +62,7 @@ class RegisteredUserController extends Controller
 
     public function verifyOTP(Request $request)
     {
-        $otp_length = env('OTP_LENGTH');
+        $otp_length = config('otp_length', 4);
         $request->validate([
             'otp' => 'required|string|max:' . $otp_length,
             'phone' => 'required|string|max:11|unique:users',
@@ -78,6 +78,7 @@ class RegisteredUserController extends Controller
                 'phone' => $phoneNumber
             ]);
             event(new Registered($user));
+            Auth::login($user);
             return response()->json([
                 'success' => true,
                 'message' => $msg
@@ -85,8 +86,10 @@ class RegisteredUserController extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'message' => $msg
-            ]);
+                'errors' => [
+                    'message' => $msg
+                ]
+            ])->setStatusCode(401);
         }
     }
     /** 
@@ -117,19 +120,31 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:11|unique:users',
+            'fullname' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'email' => 'string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'password' => Hash::make($request->password),
-        ]);
-
-        event(new Registered($user));
-        Auth::login($user);
-        return redirect(RouteServiceProvider::HOME);
+        $user = Auth::user();
+        if ($user->password == null) { // if user is not registered
+            $user->fullname = $request->fullname;
+            $user->city = $request->city;
+            $user->email = $request->email;
+            $user->password = Hash::make($request->password);
+            $user->save();
+            $token = $request->user()->createToken($request->token_name);
+            return response()->json([
+                'success' => true,
+                'message' => 'User registered successfully',
+                'access_token' => $token->plainTextToken
+            ]);
+        } else { // Duplicate register request. redirect to home
+            return response()->json([
+                'success' => false,
+                'errors' => [
+                    'message' => 'You have already registered.'
+                ]
+            ])->setStatusCode(401);
+        }
     }
 }
