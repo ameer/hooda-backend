@@ -122,7 +122,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'fullname' => 'required|string|max:255',
             'city' => 'required|string|max:255',
-            'email' => 'string|email|max:255|unique:users',
+            'email' => 'nullable|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
         $user = Auth::user();
@@ -132,7 +132,7 @@ class RegisteredUserController extends Controller
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             $user->save();
-            $token = $request->user()->createToken($request->token_name);
+            $token = $request->user()->createToken('default-token');
             return response()->json([
                 'success' => true,
                 'message' => 'User registered successfully',
@@ -146,5 +146,9 @@ class RegisteredUserController extends Controller
                 ]
             ])->setStatusCode(401);
         }
+    }
+    public function showUserData(Request $request)
+    {
+        return $request->user();
     }
 }

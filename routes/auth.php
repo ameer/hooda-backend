@@ -16,8 +16,11 @@ Route::prefix('api/v1')->group(function () {
     //     ->middleware('guest')
     //     ->name('register');
 
-    Route::post('auth/register', [RegisteredUserController::class, 'store'])
+    Route::post('/auth/register', [RegisteredUserController::class, 'store'])
         ->middleware(['auth', 'throttle:6,1']);
+
+    Route::get('/auth/user', [RegisteredUserController::class, 'showUserData'])
+        ->middleware(['auth:sanctum', 'throttle:6,1']);
 
     Route::post('/auth/verify-phone', [RegisteredUserController::class, 'verifyPhone'])
         ->middleware('guest');
@@ -29,7 +32,7 @@ Route::prefix('api/v1')->group(function () {
     //     ->middleware('guest')
     //     ->name('login');
 
-    Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+    Route::post('/auth/login', [AuthenticatedSessionController::class, 'generateSanctumToken'])
         ->middleware('guest');
 
     // Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
@@ -70,6 +73,8 @@ Route::prefix('api/v1')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->middleware('auth')
         ->name('logout');
+    Route::post('/auth/logout', [AuthenticatedSessionController::class, 'revokeToken'])
+        ->middleware('auth:sanctum');
     // Route::get('/verify-phone', [PhoneNumberVerifyController::class, 'create'])->name('phoneverification.show');
     // Route::post('/verify-phone', [PhoneNumberVerifyController::class, 'verify'])->name('phoneverification.verify');
 });

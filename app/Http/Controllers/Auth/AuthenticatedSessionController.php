@@ -56,4 +56,22 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    public function generateSanctumToken(LoginRequest $request)
+    {
+        $user = $request->authenticateMobileApp();
+        if($user->tokens()->count() > 0) {
+            $user->tokens()->delete();
+        }
+        return $user->createToken($request->ip())->plainTextToken;
+    }
+
+    public function revokeToken(Request $request)
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->user()->currentAccessToken()->delete();
+        return response()->json(['message' => 'Token revoked']);
+    }
 }
