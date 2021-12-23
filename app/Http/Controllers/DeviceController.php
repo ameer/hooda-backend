@@ -38,7 +38,6 @@ class DeviceController extends Controller
         $user = $request->user();
         $device = new device();
         $device->owner_id = $user->id;
-        $
     }
 
     /**

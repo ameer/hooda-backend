@@ -120,8 +120,8 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'fullname' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
+            'fullname' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
+            'city' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
             'email' => 'nullable|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -136,7 +136,8 @@ class RegisteredUserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'User registered successfully',
-                'access_token' => $token->plainTextToken
+                'access_token' => $token->plainTextToken,
+                'user' => $user
             ]);
         } else { // Duplicate register request. redirect to home
             return response()->json([
