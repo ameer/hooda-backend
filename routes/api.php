@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\DeviceDataController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,4 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     Route::get('/user/devices', [DeviceController::class, 'show']);
+    Route::post('/user/add-new-device', [DeviceController::class, 'store']);
+    Route::post('/user/device/{id}', [DeviceController::class, 'getSingleDevice']);
 });
+Route::post('/device/saveData', [DeviceDataController::class, 'store']);

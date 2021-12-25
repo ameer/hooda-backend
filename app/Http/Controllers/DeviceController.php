@@ -36,8 +36,19 @@ class DeviceController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
+        $request->validate([
+            'deviceType' => 'required',
+            'simCardNumber' => 'required|unique:devices,sim_number|max:11',
+            'serialNumber' => 'required|unique:devices,imei|max:16',
+        ]);
         $device = new device();
         $device->owner_id = $user->id;
+        $device->type = $request->deviceType;
+        $device->imei = $request->serialNumber;
+        $device->sim_number = $request->simCardNumber;
+        $device->location = $request->location;
+        $device->save();
+        return response()->json(['message' => 'Device added successfully']);
     }
 
     /**
@@ -52,6 +63,13 @@ class DeviceController extends Controller
 
         $deviceData = device::where('owner_id', $user->id)->get();
         return response()->json($deviceData);
+    }
+
+    public function getSingleDevice(Request $request, $id)
+    {
+        $user = $request->user();
+        $deviceData = device::where(['owner_id' => $user->id, 'id' => $id])->firstOrFail();
+        return $deviceData;
     }
 
     /**

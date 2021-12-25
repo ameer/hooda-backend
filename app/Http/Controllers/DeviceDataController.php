@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\deviceData;
 use App\Http\Requests\StoredeviceDataRequest;
+use Illuminate\Http\Request;
 use App\Http\Requests\UpdatedeviceDataRequest;
+use App\Models\device;
 
 class DeviceDataController extends Controller
 {
@@ -34,9 +36,24 @@ class DeviceDataController extends Controller
      * @param  \App\Http\Requests\StoredeviceDataRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoredeviceDataRequest $request)
+    public function store(Request $request)
     {
-        //
+        $deviceId = device::where('imei', $request->ID)->firstOrFail()->id;
+        $deviceData = new deviceData();
+        $deviceData->device_id = $deviceId;
+        $deviceData->sd = $request->SD;
+        $deviceData->pir = $request->PIR;
+        $deviceData->ss = $request->SS;
+        $deviceData->rn = $request->RN;
+        $deviceData->ps = $request->PS;
+        $deviceData->bv = $request->BV;
+        $deviceData->aq = $request->AQ;
+        $deviceData->ntc = $request->NTC;
+        $deviceData->psw = $request->PSW;
+        $deviceData->cs = $request->CS;
+        $deviceData->te = $request->TE;
+        $deviceData->save();
+        return response()->json(['message' => 'Device data added successfully']);
     }
 
     /**
