@@ -13,6 +13,7 @@ use Illuminate\Validation\Rules;
 use App\Http\Controllers\OTPController;
 use Exception;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class RegisteredUserController extends Controller
@@ -105,6 +106,7 @@ class RegisteredUserController extends Controller
         // $sms = new SMSController();
         // $result = $sms->sendSMS($phoneNumber, $otp);
         // return $result;
+        Log::debug($otp);
         error_log($otp);
         return true;
     }
