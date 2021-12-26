@@ -40,18 +40,11 @@ class RegisteredUserController extends Controller
     public function verifyPhone(Request $request)
     {
         $user = User::where(['phone' => $request->phone])->first();
-        if ($user) {
-            if ($user->password != null) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Phone number already exists'
-                ]);
-            } else { // Phone verified. Allow user to continue registration
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Phone number verified'
-                ], 201);
-            }
+        if ($user && $user->password != null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Phone number already exists'
+            ]);
         } else {
             $request->validate([
                 'phone' => 'required|string|max:11|unique:users'
