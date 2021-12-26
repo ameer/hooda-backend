@@ -38,21 +38,23 @@ class DeviceDataController extends Controller
      */
     public function store(Request $request)
     {
-        error_log(print_r($request->all(), true));
-        $deviceId = device::where('imei', $request->ID)->firstOrFail()->id;
+        $array = $request->all();
+        $keys = array_keys($array);
+        $json = json_decode($keys[0])[0];
+        $deviceId = device::where('imei', $json->ID)->firstOrFail()->id;
         $deviceData = new deviceData();
         $deviceData->device_id = $deviceId;
-        $deviceData->sd = $request->SD;
-        $deviceData->pir = $request->PIR;
-        $deviceData->ss = $request->SS;
-        $deviceData->rn = $request->RN;
-        $deviceData->ps = $request->PS;
-        $deviceData->bv = $request->BV;
-        $deviceData->aq = $request->AQ;
-        $deviceData->ntc = $request->NTC;
-        $deviceData->psw = $request->PSW;
-        $deviceData->cs = $request->CS;
-        $deviceData->te = $request->TE;
+        $deviceData->sd = $json->SD;
+        $deviceData->pir = $json->PIR;
+        $deviceData->ss = $json->SS;
+        $deviceData->rn = $json->RN;
+        $deviceData->ps = $json->PS;
+        $deviceData->bv = $json->BV;
+        $deviceData->aq = $json->AQ;
+        $deviceData->ntc = $json->NTC;
+        $deviceData->psw = $json->PSW;
+        $deviceData->cs = $json->CS;
+        $deviceData->te = $json->TE;
         $deviceData->save();
         return response()->json(['message' => 'Device data added successfully']);
     }
