@@ -38,6 +38,7 @@ class DeviceDataController extends Controller
      */
     public function store(Request $request)
     {
+        error_log(print_r($request->all(), true));
         $deviceId = device::where('imei', $request->ID)->firstOrFail()->id;
         $deviceData = new deviceData();
         $deviceData->device_id = $deviceId;
