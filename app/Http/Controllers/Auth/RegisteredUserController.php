@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
      */
     public function verifyPhone(Request $request)
     {
-        $user = User::where(['phone', $request->phone])->first();
+        $user = User::where(['phone' => $request->phone])->first();
         if ($user) {
             if ($user->password != null) {
                 return response()->json([
