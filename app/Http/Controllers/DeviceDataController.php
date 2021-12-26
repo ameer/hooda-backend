@@ -40,7 +40,8 @@ class DeviceDataController extends Controller
     {
         $array = $request->all();
         $keys = array_keys($array);
-        $json = json_decode($keys[0])[0];
+        $json = json_decode($keys[0]);
+        error_log(print_r($json, true));
         $deviceId = device::where('imei', $json->ID)->firstOrFail()->id;
         $deviceData = new deviceData();
         $deviceData->device_id = $deviceId;
