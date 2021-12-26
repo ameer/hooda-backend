@@ -48,10 +48,9 @@ class RegisteredUserController extends Controller
                 ]);
             } else { // Phone verified. Allow user to continue registration
                 return response()->json([
-                    'code' => 201,
                     'status' => 'success',
                     'message' => 'Phone number verified'
-                ]);
+                ], 201);
             }
         } else {
             $request->validate([
