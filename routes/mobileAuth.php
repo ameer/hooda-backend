@@ -16,14 +16,14 @@ use Illuminate\Support\Facades\Route;
  */
 
 
-Route::middleware(['api', 'guest'])->group(function () {
+Route::middleware(['api', 'guest', 'throttle:6,1'])->group(function () {
     Route::post('/auth/verify-phone', [RegisteredUserController::class, 'verifyPhone']);
     Route::post('/auth/verify-otp', [RegisteredUserController::class, 'verifyOTP']);
+    Route::post('/auth/register', [RegisteredUserController::class, 'store']);
     Route::post('/auth/login', [AuthenticatedSessionController::class, 'generateSanctumToken']);
 });
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/auth/register', [RegisteredUserController::class, 'store'])
-        ->middleware('throttle:6,1');
+
     Route::post('/auth/logout', [AuthenticatedSessionController::class, 'revokeToken'])
         ->name('mobileLogout');
 });
