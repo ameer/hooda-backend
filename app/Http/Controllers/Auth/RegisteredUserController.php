@@ -44,10 +44,10 @@ class RegisteredUserController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Phone number already exists'
-            ]);
+            ], 409);
         } else {
             $request->validate([
-                'phone' => 'required|string|max:11|unique:users'
+                'phone' => 'required|string|max:11'
             ]);
             $otp = new OTPController();
             [$fullHash, $phoneNumber, $otp, $maskedPhoneNumber] = $otp->ProcessOTPRequest($request->phone);
@@ -74,7 +74,7 @@ class RegisteredUserController extends Controller
         $otp_length = config('otp_length', 4);
         $request->validate([
             'otp' => 'required|string|max:' . $otp_length,
-            'phone' => 'required|string|max:11|unique:users',
+            'phone' => 'required|string|max:11',
             'loginHash' => 'required|string'
         ]);
         $phoneNumber = $request->phone;
@@ -83,7 +83,7 @@ class RegisteredUserController extends Controller
         $otp_class = new OTPController();
         [$result, $msg] = $otp_class->verifyOTP($phoneNumber, $fullHash, $input_otp);
         if ($result) {
-            $user = User::create([
+            $user = User::updateOrCreate([
                 'phone' => $phoneNumber
             ]);
             return response()->json([
@@ -129,6 +129,7 @@ class RegisteredUserController extends Controller
     {
         $user = User::where(['phone' => $request->phone])->first();
         if ($user) {
+            error_log($user->password);
             if ($user->password != null) {
                 return response()->json([
                     'status' => 'error',
@@ -146,7 +147,7 @@ class RegisteredUserController extends Controller
                 $user->email = $request->email;
                 $user->password = Hash::make($request->password);
                 $user->save();
-                $token = $request->user()->createToken('default-token');
+                $token = $user->createToken('default-token');
                 return response()->json([
                     'success' => true,
                     'message' => 'User registered successfully',
