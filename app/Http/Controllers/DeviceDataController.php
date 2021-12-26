@@ -41,7 +41,6 @@ class DeviceDataController extends Controller
         $array = $request->all();
         $keys = array_keys($array);
         $json = json_decode($keys[0]);
-        error_log(print_r($json, true));
         $deviceId = device::where('imei', $json->ID)->firstOrFail()->id;
         $deviceData = new deviceData();
         $deviceData->device_id = $deviceId;
@@ -58,6 +57,15 @@ class DeviceDataController extends Controller
         $deviceData->te = $json->TE;
         $deviceData->save();
         return response()->json(['message' => 'Device data added successfully']);
+    }
+
+    public function getLatestData(Request $request, $id)
+    {
+        $user = $request->user();
+        $device = device::where(['owner_id'=> $user->id, 'id' => $id])->firstOrFail();
+        $deviceData = deviceData::where('device_id', $device->id)->orderBy('id', 'desc')->first();
+        return response()->json($deviceData);
+
     }
 
     /**
