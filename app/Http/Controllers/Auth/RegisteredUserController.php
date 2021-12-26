@@ -127,7 +127,7 @@ class RegisteredUserController extends Controller
             'email' => 'nullable|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-        $user = Auth::user();
+        $user = $request->user();
         if ($user->password == null) { // if user is not registered
             $user->fullname = $request->fullname;
             $user->city = $request->city;
