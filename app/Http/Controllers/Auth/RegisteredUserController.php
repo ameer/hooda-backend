@@ -93,8 +93,6 @@ class RegisteredUserController extends Controller
             $user = User::create([
                 'phone' => $phoneNumber
             ]);
-            event(new Registered($user));
-            Auth::login($user);
             return response()->json([
                 'success' => true,
                 'message' => $msg
@@ -136,33 +134,38 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'fullname' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
-            'city' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
-            'email' => 'nullable|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-        $user = $request->user();
-        if ($user->password == null) { // if user is not registered
-            $user->fullname = $request->fullname;
-            $user->city = $request->city;
-            $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->save();
-            $token = $request->user()->createToken('default-token');
+        $user = User::where(['phone' => $request->phone])->first();
+        if ($user) {
+            if ($user->password != null) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You already registered!'
+                ], 409);
+            } else {
+                $request->validate([
+                    'fullname' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
+                    'city' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
+                    'email' => 'nullable|string|email|max:255|unique:users',
+                    'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                ]);
+                $user->fullname = $request->fullname;
+                $user->city = $request->city;
+                $user->email = $request->email;
+                $user->password = Hash::make($request->password);
+                $user->save();
+                $token = $request->user()->createToken('default-token');
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User registered successfully',
+                    'access_token' => $token->plainTextToken,
+                    'user' => $user
+                ]);
+            }
+        } else {
             return response()->json([
-                'success' => true,
-                'message' => 'User registered successfully',
-                'access_token' => $token->plainTextToken,
-                'user' => $user
-            ]);
-        } else { // Duplicate register request. redirect to home
-            return response()->json([
-                'success' => false,
-                'errors' => [
-                    'message' => 'You have already registered.'
-                ]
-            ])->setStatusCode(401);
+                'status' => 'error',
+                'message' => 'User not found'
+            ], 404);
         }
     }
     public function showUserData(Request $request)
