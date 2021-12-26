@@ -39,25 +39,41 @@ class RegisteredUserController extends Controller
      */
     public function verifyPhone(Request $request)
     {
-        $request->validate([
-            'phone' => 'required|string|max:11|unique:users'
-        ]);
-        $otp = new OTPController();
-        [$fullHash, $phoneNumber, $otp, $maskedPhoneNumber] = $otp->ProcessOTPRequest($request->phone);
-        if ($this->sendOTP($phoneNumber, $otp)) {
-            if ($request->wantsJson()) {
+        $user = User::where(['phone', $request->phone])->first();
+        if ($user) {
+            if ($user->password != null) {
                 return response()->json([
-                    'loginHash' => $fullHash,
-                    'phoneNumber' => $maskedPhoneNumber
+                    'status' => 'error',
+                    'message' => 'Phone number already exists'
                 ]);
-            } else {
-                return Inertia::render('Auth/VerifyPhone')->with([
-                    'loginHash' => $fullHash,
-                    'phoneNumber' => $maskedPhoneNumber,
+            } else { // Phone verified. Allow user to continue registration
+                return response()->json([
+                    'code' => 201,
+                    'status' => 'success',
+                    'message' => 'Phone number verified'
                 ]);
             }
         } else {
-            throw new Exception("Error sending SMS", 1);
+            $request->validate([
+                'phone' => 'required|string|max:11|unique:users'
+            ]);
+            $otp = new OTPController();
+            [$fullHash, $phoneNumber, $otp, $maskedPhoneNumber] = $otp->ProcessOTPRequest($request->phone);
+            if ($this->sendOTP($phoneNumber, $otp)) {
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'loginHash' => $fullHash,
+                        'phoneNumber' => $maskedPhoneNumber
+                    ]);
+                } else {
+                    return Inertia::render('Auth/VerifyPhone')->with([
+                        'loginHash' => $fullHash,
+                        'phoneNumber' => $maskedPhoneNumber,
+                    ]);
+                }
+            } else {
+                throw new Exception("Error sending SMS", 1);
+            }
         }
     }
 
