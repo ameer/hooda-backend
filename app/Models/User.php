@@ -43,4 +43,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function devices()
+    {
+        return $this->belongsToMany(device::class, 'user_device_relations', 'owner_id', 'device_id')->withPivot('role');
+    }
 }

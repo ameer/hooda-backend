@@ -1,14 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\ConfirmablePasswordController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\Auth\EmailVerificationPromptController;
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\PhoneNumberVerifyController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -23,7 +16,6 @@ Route::middleware(['api', 'guest', 'throttle:6,1'])->group(function () {
     Route::post('/auth/login', [AuthenticatedSessionController::class, 'generateSanctumToken']);
 });
 Route::middleware('auth:sanctum')->group(function () {
-
     Route::post('/auth/logout', [AuthenticatedSessionController::class, 'revokeToken'])
         ->name('mobileLogout');
 });

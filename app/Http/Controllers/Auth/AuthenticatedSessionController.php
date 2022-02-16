@@ -60,10 +60,13 @@ class AuthenticatedSessionController extends Controller
     public function generateSanctumToken(LoginRequest $request)
     {
         $user = $request->authenticateMobileApp();
-        if($user->tokens()->count() > 0) {
+        if ($user->tokens()->count() > 0) {
             $user->tokens()->delete();
         }
-        return $user->createToken($request->ip())->plainTextToken;
+        return response()->json(array(
+            'token' => $user->createToken($request->ip())->plainTextToken,
+            'user' => $user
+        ));
     }
 
     public function revokeToken(Request $request)

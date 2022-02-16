@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     Route::get('/user/devices', [DeviceController::class, 'show']);
+    Route::post('/user/check-device', [DeviceController::class, 'checkDevice']);
     Route::post('/user/add-new-device', [DeviceController::class, 'store']);
     Route::post('/user/device/{id}', [DeviceController::class, 'getSingleDevice']);
     Route::post('/user/device/{id}/data', [DeviceDataController::class, 'getLatestData']);

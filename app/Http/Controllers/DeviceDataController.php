@@ -62,7 +62,7 @@ class DeviceDataController extends Controller
     public function getLatestData(Request $request, $id)
     {
         $user = $request->user();
-        $device = device::where(['owner_id'=> $user->id, 'id' => $id])->firstOrFail();
+        $device = $user->devices()->where('device_id', $id)->firstOrFail();
         $deviceData = deviceData::where('device_id', $device->id)->orderBy('id', 'desc')->first();
         return response()->json($deviceData);
 

@@ -17,8 +17,6 @@ class device extends Model
         'type',
         'imei',
         'sim_number',
-        'pn2',
-        'pn3',
         'location',
     ];
 
@@ -28,6 +26,13 @@ class device extends Model
      * @var array
      */
     protected $hidden = [
-        'owner_id'
+        
     ];
+    /**
+     * The users that belong to the role.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_device_relations', 'device_id', 'owner_id')->withPivot('role');
+    }
 }
