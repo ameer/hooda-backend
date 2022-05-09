@@ -250,6 +250,7 @@
       2 => 'http://localhost:3000',
       3 => 'http://192.168.1.189:3000',
       4 => 'http://192.168.117.196:3000',
+      5 => 'http://192.168.42.182:3000',
     ),
     'allowed_origins_patterns' => 
     array (
@@ -662,7 +663,7 @@
     ),
     'cookie' => 'laravel_session',
     'path' => '/',
-    'domain' => '192.168.1.189',
+    'domain' => '192.168.42.182',
     'secure' => NULL,
     'http_only' => false,
     'same_site' => 'lax',
