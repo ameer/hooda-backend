@@ -71,9 +71,8 @@ class AuthenticatedSessionController extends Controller
 
     public function revokeToken(Request $request)
     {
-        Auth::guard('auth:sanctum')->logout();
-
-        $request->session()->invalidate();
+        $user = $request->user();
+        error_log(print_r($request->user(), 1));
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Token revoked']);
     }

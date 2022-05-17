@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['*','api/v1/csrf-cookie'],
+    'paths' => ['*', 'api/v1/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://127.0.0.1', 'http://localhost', 'http://localhost:3000', 'http://192.168.1.189:3000', 'http://192.168.117.196:3000', 'http://192.168.42.182:3000'],
+    'allowed_origins' => ['http://127.0.0.1', 'http://localhost', 'http://localhost:3002', 'http://192.168.1.189:3000', 'http://192.168.117.196:3000', 'http://192.168.42.182:3000'],
 
     'allowed_origins_patterns' => [],
 

@@ -15,7 +15,7 @@ Route::middleware(['api', 'guest', 'throttle:6,1'])->group(function () {
     Route::post('/auth/register', [RegisteredUserController::class, 'store']);
     Route::post('/auth/login', [AuthenticatedSessionController::class, 'generateSanctumToken']);
 });
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'api'])->group(function () {
     Route::post('/auth/logout', [AuthenticatedSessionController::class, 'revokeToken'])
         ->name('mobileLogout');
 });

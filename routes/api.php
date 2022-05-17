@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 require __DIR__ . '/mobileAuth.php';
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user/profile', function (Request $request) {
         return $request->user();
     });
