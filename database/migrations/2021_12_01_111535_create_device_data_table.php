@@ -27,9 +27,9 @@ class CreateDeviceDataTable extends Migration
             $table->string('psw', 4);
             $table->integer('cs');
             $table->integer('te')->default(0);
-            $table->unsignedBigInteger('device_id');
+            $table->foreignUuid('device_uuid');
 
-            $table->foreign('device_id')->references('id')->on('devices')->onDelete('cascade');
+            // $table->foreign('device_uuid')->references('uuid')->on('devices')->onDelete('cascade');
         });
     }
 

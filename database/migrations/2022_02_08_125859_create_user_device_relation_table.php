@@ -16,13 +16,13 @@ class CreateUserDeviceRelationTable extends Migration
         Schema::create('user_device_relations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('owner_id');
-            $table->unsignedBigInteger('device_id');
+            $table->foreignUuid('device_uuid');
             $table->tinyInteger('role')->nullable();
             $table->timestamps();
-            
+
 
             $table->foreign('owner_id')->references('id')->on('users');
-            $table->foreign('device_id')->references('id')->on('devices');
+            // $table->foreign('device_id')->references('uuid')->on('devices');
         });
     }
 

@@ -14,7 +14,7 @@ class CreateDevicesTable extends Migration
     public function up()
     {
         Schema::create('devices', function (Blueprint $table) {
-            $table->id();
+            $table->string('uuid')->primary();
             $table->timestamps();
             $table->unsignedBigInteger('owner_id');
             $table->string('imei', 16)->unique();
@@ -22,7 +22,7 @@ class CreateDevicesTable extends Migration
             $table->string('pn2', 11)->unique();
             $table->string('pn3', 11)->unique();
             $table->string('location', 250);
-            
+
             $table->foreign('owner_id')->references('id')->on('users');
         });
     }

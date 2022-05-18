@@ -51,6 +51,7 @@ class DeviceController extends Controller
         // $device->ss = $request->powerState;
         $device->psw = $request->devicePassword;
         $device->sim_number = $request->simCardNumber;
+        $device->nickname = $request->nickname;
         $device->location = $request->location;
         $device->save();
         $user->devices()->save($device);
@@ -66,7 +67,6 @@ class DeviceController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-
         $deviceData = $user->devices()->get();
         return response()->json($deviceData);
     }
@@ -97,7 +97,7 @@ class DeviceController extends Controller
     public function getSingleDevice(Request $request, $id)
     {
         $user = $request->user();
-        $deviceData = $user->devices()->where('device_id', $id)->get();
+        $deviceData = $user->devices()->where('device_uuid', $id)->firstOrFail();
         return $deviceData;
     }
 
@@ -107,9 +107,8 @@ class DeviceController extends Controller
      * @param  \App\Models\device  $device
      * @return \Illuminate\Http\Response
      */
-    public function edit(device $device)
+    public function edit(Request $request, $id)
     {
-        //
     }
 
     /**
@@ -119,9 +118,18 @@ class DeviceController extends Controller
      * @param  \App\Models\device  $device
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, device $device)
+    public function update(Request $request, $id)
     {
-        //
+        $user = $request->user();
+        $result = $user->devices()->where('device_uuid', $id)->update([
+            'nickname' => $request->nickname,
+            'location' => $request->location,
+        ]);
+        if ($result) {
+            return response()->json(['message' => 'اطلاعات دستگاه با موفقیت بروزرسانی شد.', 'device' => $user->devices()->where('device_uuid', $id)->first()], 200);
+        } else {
+            return response()->json(['message' => 'اطلاعات دستگاه بروز نشد.'], 404);
+        }
     }
 
     /**

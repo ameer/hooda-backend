@@ -45,6 +45,6 @@ class User extends Authenticatable
     ];
     public function devices()
     {
-        return $this->belongsToMany(device::class, 'user_device_relations', 'owner_id', 'device_id')->withPivot('role');
+        return $this->belongsToMany(device::class, 'user_device_relations', 'owner_id', 'device_uuid')->withPivot('role');
     }
 }
