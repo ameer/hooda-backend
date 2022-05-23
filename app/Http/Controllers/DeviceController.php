@@ -67,8 +67,12 @@ class DeviceController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        $deviceData = $user->devices()->get();
-        return response()->json($deviceData);
+        $devices = $user->devices()->get();
+        $devicesObjectByUUIDasKey = [];
+        for ($i = 0; $i < count($devices); $i++) {
+            $devicesObjectByUUIDasKey[$devices[$i]->uuid] = $devices[$i];
+        }
+        return response()->json($devicesObjectByUUIDasKey);
     }
     public function checkDevice(Request $request)
     {
@@ -89,7 +93,7 @@ class DeviceController extends Controller
                     }
                 }
             }
-            return response()->json(['message' => 'این دستگاه توسط شخص دیگری ثبت شده است.'], 401);
+            return response()->json(['message' => 'این دستگاه توسط شخص دیگری ثبت شده است.'], 400);
         } else {
             return response()->json(['message' => 'سریال وارد شده صحیح است.'], 200);
         }
