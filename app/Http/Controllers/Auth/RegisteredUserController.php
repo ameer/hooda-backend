@@ -112,7 +112,6 @@ class RegisteredUserController extends Controller
         // $sms = new SMSController();
         // $result = $sms->sendSMS($phoneNumber, $otp);
         // return $result;
-        Log::debug($otp);
         error_log($otp);
         return true;
     }
@@ -146,6 +145,7 @@ class RegisteredUserController extends Controller
                 $user->city = $request->city;
                 $user->email = $request->email;
                 $user->password = Hash::make($request->password);
+                $user->is_active = true;
                 $user->save();
                 $token = $user->createToken('default-token');
                 return response()->json([

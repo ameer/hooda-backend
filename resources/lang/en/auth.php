@@ -14,6 +14,7 @@ return [
     */
 
     'failed' => 'اطلاعات وارد شده صحیح نیست.',
+    'not_active' => 'حساب کاربری شما فعال نیست. لطفا با پشتیبانی تماس بگیرید.',
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
