@@ -128,7 +128,6 @@ class RegisteredUserController extends Controller
     {
         $user = User::where(['phone' => $request->phone])->first();
         if ($user) {
-            error_log($user->password);
             if ($user->password != null) {
                 return response()->json([
                     'status' => 'error',

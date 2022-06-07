@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DeviceDataController;
 use Illuminate\Http\Request;
@@ -16,11 +17,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::middleware('throttle:6,1')->get('/app/version', function (Request $request) {
+    return response()->json([
+        'version' => '1.0.0',
+        'build' => '1',
+        'needsUpdate' => false,
+        'showMessage' => true,
+        'message' => 'لطفا در اسرع وقت نسبت به بروزرسانی اپلیکیشن اقدام فرمایید.'
+    ]);
+});
 require __DIR__ . '/mobileAuth.php';
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user/profile', function (Request $request) {
         return $request->user();
     });
+    Route::put('/user/update', [UserController::class, 'update']);
     Route::get('/user/devices', [DeviceController::class, 'show']);
     Route::post('/user/check-device', [DeviceController::class, 'checkDevice']);
     Route::post('/user/add-new-device', [DeviceController::class, 'store']);
