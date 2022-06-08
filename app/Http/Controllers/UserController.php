@@ -75,7 +75,8 @@ class UserController extends Controller
             'fullname' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
             'city' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
             'email' => [
-                'required',
+                'nullable',
+                'email',
                 Rule::unique('users')->ignore($user),
             ],
         ]);

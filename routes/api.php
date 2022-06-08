@@ -22,7 +22,7 @@ Route::middleware('throttle:6,1')->get('/app/version', function (Request $reques
         'version' => '1.0.0',
         'build' => '1',
         'needsUpdate' => false,
-        'showMessage' => true,
+        'showMessage' => false,
         'message' => 'لطفا در اسرع وقت نسبت به بروزرسانی اپلیکیشن اقدام فرمایید.'
     ]);
 });

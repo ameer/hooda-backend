@@ -16,7 +16,7 @@ class CreateDevicesTable extends Migration
         Schema::create('devices', function (Blueprint $table) {
             $table->string('uuid')->primary();
             $table->timestamps();
-            $table->unsignedBigInteger('owner_id');
+            $table->string('owner_id');
             $table->string('imei', 16)->unique();
             $table->string('sim_number', 11)->unique();
             $table->string('pn2', 11)->unique();
