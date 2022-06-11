@@ -26,13 +26,6 @@ Route::middleware('throttle:6,1')->get('/app/version', function (Request $reques
         'message' => 'لطفا در اسرع وقت نسبت به بروزرسانی اپلیکیشن اقدام فرمایید.'
     ]);
 });
-Route::middleware('throttle:6,1')->get('/app/latest.apk', function (Request $request) {
-    return Storage::download('public/latest.apk', 'latest.apk', [
-        'Content-Type' => 'application/vnd.android.package-archive',
-        'Content-Disposition' => 'attachment; filename=latest.apk',
-        'Status' => '200'
-    ]);
-});
 require __DIR__ . '/mobileAuth.php';
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user/profile', function (Request $request) {

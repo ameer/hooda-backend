@@ -23,7 +23,13 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-
+Route::middleware('throttle:6,1')->get('/app/latest.apk', function (Request $request) {
+    return Storage::download('public/latest.apk', 'latest.apk', [
+        'Content-Type' => 'application/vnd.android.package-archive',
+        'Content-Disposition' => 'attachment; filename=latest.apk',
+        'Status' => '200'
+    ]);
+});
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
