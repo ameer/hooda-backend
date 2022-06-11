@@ -29,6 +29,46 @@ class UserController extends Controller
         //
     }
 
+    public function create_substant_device_admin(Request $request, $id)
+    {
+        $request->validate([
+            'phone' => 'required|string|max:11',
+        ]);
+        $user = $request->user();
+        if ($user->phone === $request->phone) {
+            return response()->json(['message' => 'شما نمی‌توانید شماره خودتان را به عنوان مدیر دیگری اضافه کنید.'], 400);
+        }
+        $device = $user->devices()->where('device_uuid', $id)->firstOrFail();
+        if ($device->users()->where('phone', $request->phone)->exists()) {
+            return response()->json(['message' => 'این شماره تلفن قبلا در این دستگاه ثبت شده است.'], 400);
+        }
+        if ($device->pivot->role !== 1) {
+            return response()->json([
+                'message' => 'شما مجاز به افزودن کاربر جدید نیستید.'
+            ], 403);
+        }
+        $countOfDeviceUsers = count($device->users()->get());
+        if ($countOfDeviceUsers <= 2) {
+            $newUser = User::where(['phone' => $request->phone])->first();
+            $message = "کاربر موردنظر با شماره تلفن $request->phone به مدیران دستگاه اضافه شد.";
+            if ($newUser) {
+                $device->users()->save($newUser, ['role' => $countOfDeviceUsers + 1]);
+                $device['countOfDeviceUsers'] = $countOfDeviceUsers + 1;
+                return response()->json(['message' => $message, 'device' => $device]);
+            } else {
+                $newUser = new User();
+                $newUser->phone = $request->phone;
+                $newUser->is_active = false;
+                $newUser->save();
+                $device->users()->save($newUser, ['role' => $countOfDeviceUsers + 1]);
+                $device['countOfDeviceUsers'] = $countOfDeviceUsers + 1;
+                return response()->json(['message' => $message, 'device' => $device]);
+            }
+        } else {
+            return response()->json(['message' => 'تعداد مدیران ثبت شده برای این دستگاه به حداکثر رسیده است.'], 400);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *

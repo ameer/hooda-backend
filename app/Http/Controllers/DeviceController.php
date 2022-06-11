@@ -54,7 +54,7 @@ class DeviceController extends Controller
         $device->nickname = $request->nickname;
         $device->location = $request->location;
         $device->save();
-        $user->devices()->save($device);
+        $user->devices()->save($device, ['role' => 1]);
         return response()->json(['message' => 'Device added successfully']);
     }
 
@@ -70,7 +70,10 @@ class DeviceController extends Controller
         $devices = $user->devices()->get();
         $devicesObjectByUUIDasKey = [];
         for ($i = 0; $i < count($devices); $i++) {
-            $devicesObjectByUUIDasKey[$devices[$i]->uuid] = $devices[$i];
+            $device = $devices[$i];
+            $countOfDeviceUsers = count($device->users()->get());
+            $device['countOfDeviceUsers'] = $countOfDeviceUsers;
+            $devicesObjectByUUIDasKey[$device->uuid] = $device;
         }
         return response()->json($devicesObjectByUUIDasKey);
     }
@@ -101,8 +104,10 @@ class DeviceController extends Controller
     public function getSingleDevice(Request $request, $id)
     {
         $user = $request->user();
-        $deviceData = $user->devices()->where('device_uuid', $id)->firstOrFail();
-        return $deviceData;
+        $device = $user->devices()->where('device_uuid', $id)->firstOrFail();
+        $countOfDeviceUsers = count($device->users()->get());
+        $device['countOfDeviceUsers'] = $countOfDeviceUsers;
+        return response()->json($device);
     }
 
     /**
@@ -142,8 +147,19 @@ class DeviceController extends Controller
      * @param  \App\Models\device  $device
      * @return \Illuminate\Http\Response
      */
-    public function destroy(device $device)
+    public function destroy(Request $request, $id)
     {
-        //
+
+        $user = $request->user();
+        $device = $user->devices()->where('device_uuid', $id)->firstOrFail();
+        $result = $user->devices()->detach($device);
+        if (count($device->users()->get()) === 0) {
+            $device->delete();
+        }
+        if ($result) {
+            return response()->json(['message' => 'دستگاه با موفقیت حذف شد.'], 200);
+        } else {
+            return response()->json(['message' => 'دستگاه حذف نشد.'], 404);
+        }
     }
 }

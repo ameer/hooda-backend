@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use App\Http\Controllers\OTPController;
+use App\Http\Controllers\SMSController;
 use Exception;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
@@ -51,7 +52,8 @@ class RegisteredUserController extends Controller
             ]);
             $otp = new OTPController();
             [$fullHash, $phoneNumber, $otp, $maskedPhoneNumber] = $otp->ProcessOTPRequest($request->phone);
-            if ($this->sendOTP($phoneNumber, $otp)) {
+            $smsResult = $this->sendOTP($phoneNumber, $otp);
+            if ($smsResult['status'] == 'success') {
                 if ($request->wantsJson()) {
                     return response()->json([
                         'loginHash' => $fullHash,
@@ -109,8 +111,7 @@ class RegisteredUserController extends Controller
      */
     protected function sendOTP($phoneNumber, $otp)
     {
-        // $sms = new SMSController();
-        // $result = $sms->sendSMS($phoneNumber, $otp);
+        // $result = SMSController::sendSMSUsingSOAP($phoneNumber, $otp);
         // return $result;
         error_log($otp);
         return true;

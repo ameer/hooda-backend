@@ -32,10 +32,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $request->user();
     });
     Route::put('/user/update', [UserController::class, 'update']);
+    Route::post('/user/add-admin/{id}', [UserController::class, 'create_substant_device_admin']);
     Route::get('/user/devices', [DeviceController::class, 'show']);
     Route::post('/user/check-device', [DeviceController::class, 'checkDevice']);
     Route::post('/user/add-new-device', [DeviceController::class, 'store']);
     Route::put('/user/update-device/{id}', [DeviceController::class, 'update']);
+    Route::delete('/user/delete-device/{id}', [DeviceController::class, 'destroy']);
     Route::post('/user/device/{id}', [DeviceController::class, 'getSingleDevice']);
     Route::post('/user/device/{id}/data', [DeviceDataController::class, 'getLatestData']);
 });
