@@ -21,8 +21,8 @@ Route::middleware('throttle:6,1')->get('/app/version', function (Request $reques
     return response()->json([
         'version' => '1.0.0',
         'build' => '1',
-        'needsUpdate' => false,
-        'showMessage' => false,
+        'needsUpdate' => true,
+        'showMessage' => true,
         'message' => 'لطفا در اسرع وقت نسبت به بروزرسانی اپلیکیشن اقدام فرمایید.'
     ]);
 });
