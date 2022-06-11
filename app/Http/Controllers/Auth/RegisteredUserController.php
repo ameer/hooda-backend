@@ -114,7 +114,7 @@ class RegisteredUserController extends Controller
         // $result = SMSController::sendSMSUsingSOAP($phoneNumber, $otp);
         // return $result;
         error_log($otp);
-        return true;
+        return array('status' => 'success');
     }
 
     /**
