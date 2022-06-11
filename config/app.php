@@ -236,4 +236,7 @@ return [
 
     ],
 
+    'KAVENEGAR_WEB_SERVICE_URL' => env('KAVENEGAR_WEB_SERVICE_URL', 'https://api.kavenegar.com/v1/'),
+    'KAVENEGAR_API_KEY' => env('KAVENEGAR_API_KEY', ''),
+    'KAVENEGAR_VERIFY_TEMPLATE' => env('KAVENEGAR_VERIFY_TEMPLATE', 'verify'),
 ];
