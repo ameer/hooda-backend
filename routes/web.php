@@ -24,9 +24,9 @@ Route::get('/', function () {
     ]);
 });
 Route::middleware('throttle:6,1')->get('/app/latest.apk', function (Request $request) {
-    return Storage::download('public/latest.apk', 'latest.apk', [
+    return Storage::download('public/latest.apk', 'latest-1.0.4.apk', [
         'Content-Type' => 'application/vnd.android.package-archive',
-        'Content-Disposition' => 'attachment; filename=latest.apk',
+        'Content-Disposition' => 'attachment; filename=latest-1.0.4.apk',
         'Status' => '200'
     ]);
 });
