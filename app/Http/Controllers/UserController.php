@@ -69,6 +69,31 @@ class UserController extends Controller
         }
     }
 
+    public function remove_substant_device_admin(Request $request, $id)
+    {
+        $request->validate([
+            'phone' => 'required|string|max:11',
+        ]);
+        $user = $request->user();
+        if ($user->phone === $request->phone) {
+            return response()->json(['message' => 'شما نمی‌توانید شماره خودتان را حذف کنید. از گزینه بازگشت به تنظیمات کارخانه استفاده کنید.'], 400);
+        }
+        $device = $user->devices()->where('device_uuid', $id)->firstOrFail();
+        if ($device->pivot->role !== 1) {
+            return response()->json([
+                'message' => 'شما مجاز به حذف مدیر نیستید.'
+            ], 403);
+        }
+        if ($device->users()->where('phone', $request->phone)->exists()) {
+            $user_to_removed = $device->users()->where('phone', $request->phone)->first();
+            $device->users()->detach($user_to_removed);
+            $device['countOfDeviceUsers'] = count($device->users()->get());
+            return response()->json(['message' => 'کاربر موردنظر با موفقیت از مدیران دستگاه حذف شد.', 'device' => $device]);
+        } else {
+            return response()->json(['message' => 'کاربر موردنظر در این دستگاه ثبت نشده است.'], 400);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *

@@ -141,6 +141,33 @@ class DeviceController extends Controller
         }
     }
 
+    public function change_device_password(Request $request, $id)
+    {
+        $request->validate([
+            'currentPassword' => 'required|max:4|min:4',
+            'newPassword' => 'required|max:4|min:4|different:currentPassword|confirmed',
+        ]);
+        $user = $request->user();
+        $device = $user->devices()->where('device_uuid', $id)->firstOrFail();
+        if ($device->psw == $request->currentPassword) {
+            $device->psw = $request->newPassword;
+            $device->save();
+            return response()->json(['message' => 'رمز عبور با موفقیت بروزرسانی شد.', 'device' => $device], 200);
+        } else {
+            return response()->json(['message' => 'رمز عبور فعلی اشتباه است.'], 400);
+        }
+    }
+
+    public function reset_factory(Request $request, $id)
+    {
+        // IN PROGRESS
+        // $user = $request->user();
+        // $device = $user->devices()->where('device_uuid', $id)->firstOrFail();
+        // $device->psw = '0000';
+        // $device->save();
+        // return response()->json(['message' => 'رمز عبور با موفقیت بروزرسانی شد.', 'device' => $device], 200);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
