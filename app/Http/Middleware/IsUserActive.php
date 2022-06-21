@@ -16,7 +16,7 @@ class IsUserActive
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->user()->is_active) {
+        if ($request->user() && !$request->user()->is_active) {
             return response()->json([
                 'status' => 'error',
                 'message' => __('auth.not_active')
