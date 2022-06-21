@@ -15,18 +15,11 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-Route::middleware('throttle:6,1')->get('/app/latest.apk', function (Request $request) {
-    return Storage::download('public/latest.apk', 'latest-1.0.4.apk', [
+Route::middleware('throttle:6,1')->get('/app/latest', function (Request $request) {
+    $version = '1.0.9';
+    return Storage::download('public/latest.apk', "latest-$version.apk", [
         'Content-Type' => 'application/vnd.android.package-archive',
-        'Content-Disposition' => 'attachment; filename=latest-1.0.4.apk',
+        'Content-Disposition' => "attachment; filename=latest-$version.apk",
         'Status' => '200'
     ]);
 });

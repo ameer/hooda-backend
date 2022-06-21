@@ -129,10 +129,14 @@ class DeviceController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'simCardNumber' => 'unique:devices,sim_number|max:11',
+        ]);
         $user = $request->user();
         $result = $user->devices()->where('device_uuid', $id)->update([
             'nickname' => $request->nickname,
             'location' => $request->location,
+            'sim_number' => $request->simCardNumber,
         ]);
         if ($result) {
             return response()->json(['message' => 'اطلاعات دستگاه با موفقیت بروزرسانی شد.', 'device' => $user->devices()->where('device_uuid', $id)->first()], 200);
@@ -180,7 +184,8 @@ class DeviceController extends Controller
         $user = $request->user();
         $device = $user->devices()->where('device_uuid', $id)->firstOrFail();
         $result = $user->devices()->detach($device);
-        if (count($device->users()->get()) === 0) {
+        if ($device->pivot->role === 1) {
+            $device->users()->detach();
             $device->delete();
         }
         if ($result) {

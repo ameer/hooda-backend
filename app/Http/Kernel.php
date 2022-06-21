@@ -44,6 +44,7 @@ class Kernel extends HttpKernel
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            'isUserActive'
         ],
     ];
 
@@ -64,6 +65,7 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'verifiedphone' =>\App\Http\Middleware\PhoneIsVerified::class,
+        'isUserActive' => \App\Http\Middleware\IsUserActive::class,
+        'verifiedphone' => \App\Http\Middleware\PhoneIsVerified::class,
     ];
 }

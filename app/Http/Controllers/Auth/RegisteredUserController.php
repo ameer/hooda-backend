@@ -98,7 +98,7 @@ class RegisteredUserController extends Controller
                 'errors' => [
                     'message' => $msg
                 ]
-            ])->setStatusCode(401);
+            ], 422);
         }
     }
     /** 
@@ -111,12 +111,12 @@ class RegisteredUserController extends Controller
      */
     protected function sendOTP($phoneNumber, $otp)
     {
-        $sms = new SMSController();
-        $result = $sms->sendSMS($phoneNumber, $otp);
+        // $sms = new SMSController();
+        // $result = $sms->sendSMS($phoneNumber, $otp);
         error_log($otp);
-        return $result;
+        // return $result;
         // error_log($otp);
-        // return array('status' => 'success');
+        return array('status' => 'success');
     }
 
     /**

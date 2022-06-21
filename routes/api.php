@@ -19,8 +19,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:6,1')->get('/app/version', function (Request $request) {
     return response()->json([
-        'version' => '1.0.8',
+        'version' => '1.0.9',
         'build' => '1',
+        'updateURL' => 'https://api.hoodaiot.ir/app/latest',
         'needsUpdate' => true,
         'showMessage' => false,
         'message' => 'لطفا در اسرع وقت نسبت به بروزرسانی اپلیکیشن اقدام فرمایید.'
