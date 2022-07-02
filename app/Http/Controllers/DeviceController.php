@@ -172,6 +172,12 @@ class DeviceController extends Controller
         // return response()->json(['message' => 'رمز عبور با موفقیت بروزرسانی شد.', 'device' => $device], 200);
     }
 
+    public function getAllDevices(Request $request)
+    {
+        $devices = device::all();
+        return response()->json($devices);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

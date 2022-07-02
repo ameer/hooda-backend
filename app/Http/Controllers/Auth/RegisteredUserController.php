@@ -167,4 +167,31 @@ class RegisteredUserController extends Controller
     {
         return $request->user();
     }
+
+    public function register_admin(Request $request)
+    {
+        $request->validate([
+            'fullname' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
+            'city' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+        $user = User::updateOrCreate([
+            'phone' => $request->phone
+        ]);
+        $user->fullname = $request->fullname;
+        $user->city = $request->city;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->is_active = true;
+        $user->role = 2;
+        $user->save();
+        $token = $user->createToken('default-token');
+        return response()->json([
+            'success' => true,
+            'message' => 'User registered successfully',
+            'access_token' => $token->plainTextToken,
+            'user' => $user
+        ]);
+    }
 }

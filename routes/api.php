@@ -45,4 +45,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/user/device/{id}', [DeviceController::class, 'getSingleDevice']);
     Route::post('/user/device/{id}/data', [DeviceDataController::class, 'getLatestData']);
 });
-Route::post('/device/saveData', [DeviceDataController::class, 'store']);
+// Route::post('/device/saveData', [DeviceDataController::class, 'store']);
+require __DIR__ . '/admin.php';

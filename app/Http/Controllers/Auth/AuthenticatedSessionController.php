@@ -80,4 +80,23 @@ class AuthenticatedSessionController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Token revoked']);
     }
+
+    public function generateAdminToken(LoginRequest $request)
+    {
+        $user = $request->authenticateAdmin();
+        error_log(print_r($user, true));
+        if ($user->role < 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('auth.not_admin')
+            ], 401);
+        }
+        if ($user->tokens()->count() > 0) {
+            $user->tokens()->delete();
+        }
+        return response()->json(array(
+            'token' => $user->createToken('admin-token', ['users:manage'])->plainTextToken,
+            'user' => $user
+        ));
+    }
 }

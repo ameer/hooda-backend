@@ -74,8 +74,26 @@ class LoginRequest extends FormRequest
         $user = User::where('phone', $this->phone)->first();
         if (!$user || !Hash::check($this->password, $user->password)) {
             RateLimiter::hit($this->throttleKey());
-            throw new AuthenticationException( __('auth.failed'));
-            
+            throw new AuthenticationException(__('auth.failed'));
+        }
+        return $user;
+    }
+
+    /**
+     * Attempt to authenticate the request's credentials for dashboard.
+     */
+
+    public function authenticateAdmin()
+    {
+        $this->ensureIsNotRateLimited();
+        $this->validate([
+            'phone' => 'required',
+            'password' => 'required'
+        ]);
+        $user = User::where('phone', $this->phone)->first();
+        if (!$user || !Hash::check($this->password, $user->password)) {
+            RateLimiter::hit($this->throttleKey());
+            throw new AuthenticationException(__('auth.failed'));
         }
         return $user;
     }

@@ -155,6 +155,16 @@ class UserController extends Controller
         ]);
     }
 
+    public function getAllUsers(Request $request)
+    {
+        $user = $request->user();
+        $users = User::where('id', '!=', $user->id)->get();
+        return response()->json([
+            'status' => 'success',
+            'users' => $users
+        ]);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

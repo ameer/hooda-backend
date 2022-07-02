@@ -16,6 +16,7 @@ return [
     'failed' => 'اطلاعات وارد شده صحیح نیست.',
     'updated' => 'اطلاعات با موفقیت به روز شد.',
     'not_active' => 'حساب کاربری شما فعال نیست. لطفا با پشتیبانی تماس بگیرید.',
+    'not_admin' => 'شما اجازه دسترسی به این صفحه را ندارید',
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
