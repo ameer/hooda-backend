@@ -40,6 +40,9 @@ class RegisteredUserController extends Controller
      */
     public function verifyPhone(Request $request)
     {
+        $request->validate([
+            'phone' => 'required|string|max:11'
+        ]);
         $user = User::where(['phone' => $request->phone])->first();
         if ($user && $user->password != null) {
             return response()->json([
@@ -47,9 +50,6 @@ class RegisteredUserController extends Controller
                 'message' => 'Phone number already exists'
             ], 409);
         } else {
-            $request->validate([
-                'phone' => 'required|string|max:11'
-            ]);
             $otp = new OTPController();
             [$fullHash, $phoneNumber, $otp, $maskedPhoneNumber] = $otp->ProcessOTPRequest($request->phone);
             $smsResult = $this->sendOTP($phoneNumber, $otp);
@@ -84,13 +84,17 @@ class RegisteredUserController extends Controller
         $input_otp = $request->otp;
         $otp_class = new OTPController();
         [$result, $msg] = $otp_class->verifyOTP($phoneNumber, $fullHash, $input_otp);
+
         if ($result) {
             $user = User::updateOrCreate([
                 'phone' => $phoneNumber
             ]);
+            $otp = new OTPController();
+            $signUpHash = $otp->generateSignupHash($request->phone);
             return response()->json([
                 'success' => true,
-                'message' => $msg
+                'message' => $msg,
+                'hash' => $signUpHash,
             ]);
         } else {
             return response()->json([
@@ -113,9 +117,7 @@ class RegisteredUserController extends Controller
     {
         $sms = new SMSController();
         $result = $sms->sendSMS($phoneNumber, $otp);
-        //error_log($otp);
         return $result;
-        //return array('status' => 'success');
     }
 
     /**
@@ -128,6 +130,24 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'phone' => 'required|string|max:11',
+            'fullname' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
+            'city' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'hash' => 'required|string'
+        ]);
+        $otp_class = new OTPController();
+        [$result, $msg] = $otp_class->verifySignupHash($request->phone, $request->hash);
+        if (!$result) {
+            return response()->json([
+                'success' => false,
+                'errors' => [
+                    'message' => $msg
+                ]
+            ], 422);
+        }
         $user = User::where(['phone' => $request->phone])->first();
         if ($user) {
             if ($user->password != null) {
@@ -136,12 +156,6 @@ class RegisteredUserController extends Controller
                     'message' => 'You already registered!'
                 ], 409);
             } else {
-                $request->validate([
-                    'fullname' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
-                    'city' => 'required|regex:/^[\x{0600}-\x{06ee}\s]+$/u|string|max:255',
-                    'email' => 'nullable|string|email|max:255|unique:users',
-                    'password' => ['required', 'confirmed', Rules\Password::defaults()],
-                ]);
                 $user->fullname = $request->fullname;
                 $user->city = $request->city;
                 $user->email = $request->email;

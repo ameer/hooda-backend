@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Exception;
 use SoapClient;
 
@@ -37,24 +38,29 @@ class SMSController extends Controller
 
     public function sendSMS($phoneNumber, $otp)
     {
-        curl_setopt_array($this->curl, array(
-            CURLOPT_URL => "$this->webServiceURL/verify/lookup.json",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array('receptor' => $phoneNumber, 'token' => $otp, 'template' => $this->template),
-        ));
-        try {
-            $response = curl_exec($this->curl);
-            curl_close($this->curl);
-            return array('status' => 'success', 'result' => $response);
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            return array('status' => 'error', 'result' => $e->getMessage());
+        if (App::environment('local')) {
+            error_log($phoneNumber . " => " . $otp);
+            return array('status' => 'success');
+        } else {
+            curl_setopt_array($this->curl, array(
+                CURLOPT_URL => "$this->webServiceURL/verify/lookup.json",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array('receptor' => $phoneNumber, 'token' => $otp, 'template' => $this->template),
+            ));
+            try {
+                $response = curl_exec($this->curl);
+                curl_close($this->curl);
+                return array('status' => 'success', 'result' => $response);
+            } catch (Exception $e) {
+                error_log($e->getMessage());
+                return array('status' => 'error', 'result' => $e->getMessage());
+            }
         }
     }
 }
