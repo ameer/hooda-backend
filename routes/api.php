@@ -22,7 +22,7 @@ Route::middleware('throttle:6,1')->get('/app/version', function (Request $reques
         'version' => '1.0.10',
         'build' => '1',
         'updateURL' => 'https://api.hoodaiot.ir/app/latest',
-        'needsUpdate' => true,
+        'needsUpdate' => false,
         'showMessage' => false,
         'message' => 'لطفا در اسرع وقت نسبت به بروزرسانی اپلیکیشن اقدام فرمایید.'
     ]);
