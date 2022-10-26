@@ -41,8 +41,10 @@ class DeviceController extends Controller
             'deviceType' => 'required',
             // 'powerState' => 'required',
             'devicePassword' => 'required|max:4|min:4',
-            'simCardNumber' => 'required|unique:devices,sim_number|max:11',
-            'serialNumber' => 'required|unique:devices,imei|max:16',
+            // 'simCardNumber' => 'required|unique:devices,sim_number|max:11',
+            // 'serialNumber' => 'required|unique:devices,imei|max:16',
+            'simCardNumber' => 'required|max:11',
+            'serialNumber' => 'required|max:16',
         ]);
         $device = new device();
 
