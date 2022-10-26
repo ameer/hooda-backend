@@ -98,7 +98,8 @@ class DeviceController extends Controller
                     }
                 }
             }
-            return response()->json(['message' => 'این دستگاه توسط شخص دیگری ثبت شده است.'], 400);
+            return response()->json(['message' => 'سریال وارد شده صحیح است.'], 200);
+            // return response()->json(['message' => 'این دستگاه توسط شخص دیگری ثبت شده است.'], 400);
         } else {
             return response()->json(['message' => 'سریال وارد شده صحیح است.'], 200);
         }
