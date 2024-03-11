@@ -43,7 +43,7 @@ class SMSController extends Controller
             return array('status' => 'success');
         } else {
             curl_setopt_array($this->curl, array(
-                CURLOPT_URL => "$this->webServiceURL/verify/lookup.json",
+                CURLOPT_URL => "$this->webServiceURL",
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
